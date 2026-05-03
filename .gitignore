@@ -9,6 +9,9 @@ wheels/
 # Virtual environments
 .venv
 
+# Dataset
+dataset/*.jsonl
+
 # Documentation
 doc/
 
