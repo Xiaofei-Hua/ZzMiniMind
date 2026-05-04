@@ -28,6 +28,9 @@ from trainer.trainer_utils import (  # 训练工具函数
     SkipBatchSampler,
 )
 
+from constants import PRETRAIN_T2T_MINI_DATASET_DIR as DATA_PATH
+from constants import CHECKPOINT_DIR, OUT_DIR
+
 # 忽略警告信息, 保持输出清洁
 warnings.filterwarnings("ignore")
 
@@ -126,7 +129,7 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
                 epoch=epoch,
                 step=step,
                 wandb=wandb,
-                save_dir="../checkpoints",
+                save_dir=CHECKPOINT_DIR,
             )
 
             model.train()  # 恢复训练模式
@@ -137,7 +140,7 @@ if __name__ == "__main__":
 
     # ========== 基础训练参数 ==========
     parser.add_argument(
-        "--save_dir", type=str, default="../out", help="模型保存目录"
+        "--save_dir", type=str, default=OUT_DIR, help="模型保存目录"
     )
     parser.add_argument(
         "--save_weight", default="pretrain", type=str, help="保存权重的前缀名"
@@ -177,14 +180,14 @@ if __name__ == "__main__":
         default=0,
         type=int,
         choices=[0, 1],
-        help="是否使用MoE架构",
+        help="是否使用 MoE 架构",
     )
 
     # ========== 数据和恢复参数 ==========
     parser.add_argument(
         "--data_path",
         type=str,
-        default="/home/outsiderzz/Projects/ZzMiniMind/dataset/pretrain_t2t_mini.jsonl",
+        default=DATA_PATH,
         help="预训练数据路径",
     )
     parser.add_argument(
@@ -219,11 +222,11 @@ if __name__ == "__main__":
     """
     local_rank = init_distributed_mode()
     if dist.is_initialized():
-        args.device = f"cuda: {local_rank}"  # 分布式训练时使用对应的GPU
+        args.device = f"cuda: {local_rank}"  # 分布式训练时使用对应的 GPU
 
     # 随机种子设置知识点
     # 不同进程使用不同的种子, 避免数据采样完全相同
-    # 42是基础种子, 每个进程加上自己的rank保证不同
+    # 42 是基础种子, 每个进程加上自己的 rank 保证不同
     setup_seed(42 + (dist.get_rank() if dist.is_initialized() else 0))
 
     # ========== 2. 配置目录、模型参数、检查点 ==========
@@ -246,7 +249,7 @@ if __name__ == "__main__":
     # 如果开启了断点续训, 尝试加载之前的训练状态
     ckp_data = (
         lm_checkpoint(
-            lm_config, weight=args.save_weight, save_dir="../checkpoints"
+            lm_config, weight=args.save_weight, save_dir=CHECKPOINT_DIR
         )
         if args.from_resume == 1
         else None
@@ -274,10 +277,10 @@ if __name__ == "__main__":
     """
     wandb = None
     if args.use_wandb and is_main_process():
-        # 使用SwanLab作为WandB的替代
+        # 使用 SwanLab 作为 WandB 的替代
         import swanlab as wandb
 
-        # 如果有检查点数据, 获取之前的wandb_id来恢复实验
+        # 如果有检查点数据, 获取之前的 wandb_id 来恢复实验
         wandb_id = ckp_data.get("wandb_id") if ckp_data else None
         resume = "must" if wandb_id else None  # 必须恢复到指定实验
 
@@ -290,10 +293,10 @@ if __name__ == "__main__":
     # ========== 5. 定义模型、数据、优化器 ==========
     """
     训练组件初始化:
-    - 模型: 根据配置创建MiniMind模型
+    - 模型: 根据配置创建 MiniMind 模型
     - 数据集: 加载预训练数据
     - 采样器: 分布式训练的数据分配
-    - 优化器: AdamW优化器
+    - 优化器: AdamW 优化器
     - 缩放器: 混合精度训练的梯度缩放
     """
     # 初始化模型和分词器
@@ -321,7 +324,7 @@ if __name__ == "__main__":
 
     if dist.is_initialized():
         # RoPE位置编码特殊处理
-        # freqs_cos, freqs_sin是位置编码缓存, 不需要梯度同步
+        # freqs_cos, freqs_sin 是位置编码缓存, 不需要梯度同步
         model._ddp_params_and_buffers_to_ignore = {"freqs_cos", "freqs_sin"}
         model = DistributedDataParallel(model, device_ids=[local_rank])
 

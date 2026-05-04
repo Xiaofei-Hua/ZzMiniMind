@@ -18,6 +18,7 @@ __pycache__/
 # Dataset / temp files
 checkpoints/
 out/
+logs/
 dataset/._____temp/
 dataset/*.jsonl
 dataset/__pycache__/
