@@ -11,7 +11,35 @@ wheels/
 
 # Dataset
 dataset/*.jsonl
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Dataset / temp files
+checkpoints/
+out/
+dataset/._____temp/
+dataset/*.jsonl
+dataset/__pycache__/
+
+dataset/.msc
+*.pt
+*.pth
+*.bin
+*.safetensors
 
 # Documentation
 doc/
 
+# macOS
+.DS_Store
+
+# Large generated files
+checkpoints/
+out/
+dataset/._____temp/
+dataset/*.jsonl
+*.pt
+*.pth
+*.bin
+*.safetensors

@@ -181,7 +181,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--data_path",
         type=str,
-        default="../dataset/pretrain_hq.jsonl",
+        default="../dataset/pretrain_t2t_mini.jsonl",
         help="预训练数据路径",
     )
     parser.add_argument(
