@@ -21,6 +21,7 @@ out/
 dataset/._____temp/
 dataset/*.jsonl
 dataset/__pycache__/
+._____temp/
 
 dataset/.msc
 *.pt
