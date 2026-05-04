@@ -85,7 +85,10 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
             eta_min = spend_time / (step + 1) * iters // 60 - spend_time // 60
 
             Logger(
-                f"Epoch: [{epoch + 1} / {args.epochs}]({step} / {iters}), loss: {current_loss:.6f}, lr: {current_lr:.12f}, epoch_Time: {eta_min} min"
+                f"Epoch: [{epoch + 1}/{args.epochs}]({step}/{iters}) | "
+                f"loss: {current_loss:.6E} | "
+                f"lr: {current_lr:.6E} | "
+                f"epoch_Time: {eta_min} min"
             )
 
             # 记录到实验跟踪系统
@@ -149,7 +152,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--device",
         type=str,
-        default="cuda: 0" if torch.cuda.is_available() else "cpu",
+        default="cuda:0" if torch.cuda.is_available() else "cpu",
         help="训练设备",
     )
     parser.add_argument("--dtype", type=str, default="bfloat16", help="混合精度类型")
@@ -181,7 +184,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--data_path",
         type=str,
-        default="../dataset/pretrain_t2t_mini.jsonl",
+        default="/home/outsiderzz/Projects/ZzMiniMind/dataset/pretrain_t2t_mini.jsonl",
         help="预训练数据路径",
     )
     parser.add_argument(
@@ -216,7 +219,7 @@ if __name__ == "__main__":
     """
     local_rank = init_distributed_mode()
     if dist.is_initialized():
-        args.device = f"cuda:{local_rank}"  # 分布式训练时使用对应的GPU
+        args.device = f"cuda: {local_rank}"  # 分布式训练时使用对应的GPU
 
     # 随机种子设置知识点
     # 不同进程使用不同的种子, 避免数据采样完全相同
