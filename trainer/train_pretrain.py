@@ -85,7 +85,7 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
             eta_min = spend_time / (step + 1) * iters // 60 - spend_time // 60
 
             Logger(
-                f"Epoch:[{epoch + 1}/{args.epochs}]({step}/{iters}) loss:{current_loss:.6f} lr:{current_lr:.12f} epoch_Time:{eta_min}min:"
+                f"Epoch: [{epoch + 1} / {args.epochs}]({step} / {iters}), loss: {current_loss:.6f}, lr: {current_lr:.12f}, epoch_Time: {eta_min} min"
             )
 
             # 记录到实验跟踪系统
@@ -135,12 +135,12 @@ if __name__ == "__main__":
     # ========== 基础训练参数 ==========
     parser.add_argument(
         "--save_dir", type=str, default="../out", help="模型保存目录"
-    )  # ！修正：原"out"缺少../前缀
+    )
     parser.add_argument(
         "--save_weight", default="pretrain", type=str, help="保存权重的前缀名"
     )
     parser.add_argument(
-        "--epochs", type=int, default=1, help="训练轮数(建议1轮zero或2-6轮充分训练)"
+        "--epochs", type=int, default=1, help="训练轮数 (建议 1 轮 zero 或 2-6 轮充分训练)"
     )
     parser.add_argument("--batch_size", type=int, default=32, help="batch size")
     parser.add_argument("--learning_rate", type=float, default=5e-4, help="初始学习率")
@@ -149,7 +149,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--device",
         type=str,
-        default="cuda:0" if torch.cuda.is_available() else "cpu",
+        default="cuda: 0" if torch.cuda.is_available() else "cpu",
         help="训练设备",
     )
     parser.add_argument("--dtype", type=str, default="bfloat16", help="混合精度类型")
@@ -174,7 +174,7 @@ if __name__ == "__main__":
         default=0,
         type=int,
         choices=[0, 1],
-        help="是否使用MoE架构(0=否, 1=是)",
+        help="是否使用MoE架构",
     )
 
     # ========== 数据和恢复参数 ==========
@@ -188,20 +188,20 @@ if __name__ == "__main__":
         "--from_weight",
         default="none",
         type=str,
-        help="基于哪个权重训练, 为none则从头开始",
+        help="基于哪个权重训练, 为 none 则从头开始",
     )
     parser.add_argument(
         "--from_resume",
         default=0,
         type=int,
         choices=[0, 1],
-        help="是否自动检测&续训(0=否, 1=是)",
+        help="是否自动检测 & 续训",
     )
 
     # ========== 实验跟踪参数 ==========
-    parser.add_argument("--use_wandb", action="store_true", help="是否使用wandb")
+    parser.add_argument("--use_wandb", action="store_true", help="是否使用 wandb")
     parser.add_argument(
-        "--wandb_project", type=str, default="ZzMind-Pretrain", help="wandb项目名"
+        "--wandb_project", type=str, default="ZzMind-Pretrain", help="wandb 项目名"
     )
 
     # 解析命令行参数
@@ -209,7 +209,7 @@ if __name__ == "__main__":
 
     # ========== 1. 初始化环境和随机种子 ==========
     """
-    📚 分布式训练初始化知识点：
+    分布式训练初始化知识点：
     - local_rank: 当前进程在本机上的GPU编号
     - 随机种子: 确保不同进程有不同但可复现的随机序列
     - 这样既保证了随机性, 又保证了可复现性
@@ -218,14 +218,14 @@ if __name__ == "__main__":
     if dist.is_initialized():
         args.device = f"cuda:{local_rank}"  # 分布式训练时使用对应的GPU
 
-    # 📚 随机种子设置知识点
+    # 随机种子设置知识点
     # 不同进程使用不同的种子, 避免数据采样完全相同
     # 42是基础种子, 每个进程加上自己的rank保证不同
     setup_seed(42 + (dist.get_rank() if dist.is_initialized() else 0))
 
     # ========== 2. 配置目录、模型参数、检查点 ==========
     """
-    📚 模型配置和检查点管理：
+    模型配置和检查点管理：
     - 创建保存目录
     - 构建模型配置对象
     - 尝试加载断点续训数据
@@ -239,12 +239,12 @@ if __name__ == "__main__":
         use_moe=bool(args.use_moe),
     )
 
-    # 📚 断点续训知识点
+    # 断点续训知识点
     # 如果开启了断点续训, 尝试加载之前的训练状态
     ckp_data = (
         lm_checkpoint(
             lm_config, weight=args.save_weight, save_dir="../checkpoints"
-        )  # ！修正：原"checkpoints"缺少../前缀
+        )
         if args.from_resume == 1
         else None
     )
@@ -341,7 +341,7 @@ if __name__ == "__main__":
                 pin_memory=True,
             )
             Logger(
-                f"Epoch [{epoch + 1}/{args.epochs}]: 跳过前{start_step}个step, 从step {start_step + 1}开始"
+                f"Epoch [{epoch + 1}/{args.epochs}]: 跳过前 {start_step} 个 step, 从 step {start_step + 1} 开始"
             )
             train_epoch(epoch, loader, len(loader) + start_step, start_step, wandb)
         else:  # 默认从头开始
