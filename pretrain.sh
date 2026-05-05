@@ -25,8 +25,9 @@ if [ -z "${TMUX:-}" ]; then
         exit 0
     fi
 
-    # 创建新 tmux 会话, 并在里面运行本脚本
-    tmux new-session -s "${SESSION_NAME}" "bash '${BASH_SOURCE[0]}'"
+    # 创建新 tmux 会话，并在里面运行本脚本
+    # 训练脚本退出后保留窗口，方便查看错误信息
+    tmux new-session -s "${SESSION_NAME}" "bash '${BASH_SOURCE[0]}'; echo; echo '脚本已退出，按 Enter 关闭 tmux 窗口'; read"
     exit 0
 fi
 
@@ -46,16 +47,32 @@ cd "${SCRIPT_DIR}" || exit 1
     echo "======================================"
     echo
 
-    python trainer/train_pretrain.py \
-        --use_moe 1 \
-        --batch_size 32 \
+    echo "========== Training Config =========="
+    echo "use_moe: 0"
+    echo "batch_size: 48"
+    echo "accumulation_steps: 8"
+    echo "effective_batch_size: 256"
+    echo "max_seq_len: 512"
+    echo "learning_rate: 5e-4"
+    echo "epochs: 1"
+    echo "num_workers: 4"
+    echo "dtype: bfloat16"
+    echo "grad_clip: 1.0"
+    echo "log_interval: 500"
+    echo "====================================="
+    echo
+
+    PYTHONUNBUFFERED=1 python -u trainer/train_pretrain.py \
+        --use_moe 0 \
+        --batch_size 48 \
         --accumulation_steps 8 \
         --max_seq_len 512 \
         --learning_rate 5e-4 \
-        --epochs 3 \
+        --epochs 1 \
         --num_workers 4 \
         --dtype bfloat16 \
-        --grad_clip 1.0
+        --grad_clip 1.0 \
+        --log_interval 500
 
     EXIT_CODE=$?
 

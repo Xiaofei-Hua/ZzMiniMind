@@ -2,6 +2,8 @@ import os
 import sys
 
 __package__ = "trainer"
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 
 import argparse  # 命令行参数解析
 import re  # 正则表达式，用于奖励计算

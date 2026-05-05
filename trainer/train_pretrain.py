@@ -28,7 +28,7 @@ from trainer.trainer_utils import (  # 训练工具函数
     SkipBatchSampler,
 )
 
-from constants import PRETRAIN_T2T_MINI_DATASET_DIR as DATA_PATH
+from constants import PRETRAIN_T2T_DATASET_DIR as DATA_PATH
 from constants import CHECKPOINT_DIR, OUT_DIR
 
 # 忽略警告信息, 保持输出清洁
@@ -61,7 +61,7 @@ def train_epoch(epoch, loader, iters, start_step=0, wandb=None):
 
             loss = (
                 res.loss + res.aux_loss
-            )  # ！修正：原手动计算loss_fct+loss_mask, 现用模型内置的loss
+            )  # 原手动计算 loss_fct + loss_mask, 现用模型内置的 loss
 
             loss = loss / args.accumulation_steps
 
@@ -179,9 +179,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--dtype", 
-            type=str, 
-            default="bfloat16", 
-            help="混合精度类型"
+        type=str, 
+        default="bfloat16", 
+        help="混合精度类型"
     )
     parser.add_argument(
         "--num_workers", 
@@ -289,7 +289,7 @@ if __name__ == "__main__":
     """
     local_rank = init_distributed_mode()
     if dist.is_initialized():
-        args.device = f"cuda: {local_rank}"  # 分布式训练时使用对应的 GPU
+        args.device = f"cuda:{local_rank}"  # 分布式训练时使用对应的 GPU
 
     # 随机种子设置知识点
     # 不同进程使用不同的种子, 避免数据采样完全相同
