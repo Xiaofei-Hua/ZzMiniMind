@@ -381,20 +381,44 @@ if __name__ == "__main__":
     )
 
     # ========== 基础训练参数 ==========
-    parser.add_argument("--save_dir", type=str, default=OUT_DIR, help="模型保存目录")
     parser.add_argument(
-        "--save_weight", default="ppo_actor", type=str, help="保存权重的前缀名"
+        "--save_dir", 
+        type=str, 
+        default=OUT_DIR, 
+        help="模型保存目录"
     )
-    parser.add_argument("--epochs", type=int, default=1, help="训练轮数")
     parser.add_argument(
-        "--batch_size", type=int, default=2, help="batch size(PPO batch 较小)"
+        "--save_weight", 
+        default="ppo_actor", 
+        type=str, 
+        help="保存权重的前缀名"
+    )
+    parser.add_argument(
+        "--epochs", 
+        type=int, 
+        default=1, 
+        help="训练轮数"
+    )
+    parser.add_argument(
+        "--batch_size", 
+        type=int, 
+        default=2, 
+        help="batch size(PPO batch 较小)"
     )
 
     # PPO 学习率设置
     # PPO 学习率通常很小，避免策略剧烈变化
-    parser.add_argument("--learning_rate", type=float, default=8e-8, help="Actor 学习率")
     parser.add_argument(
-        "--critic_learning_rate", type=float, default=8e-8, help="Critic 学习率"
+        "--learning_rate", 
+        type=float, 
+        default=8E-8, 
+        help="Actor 学习率"
+    )
+    parser.add_argument(
+        "--critic_learning_rate", 
+        type=float, 
+        default=8E-8, 
+        help="Critic 学习率"
     )
 
     # ========== 硬件配置 ==========
@@ -404,20 +428,58 @@ if __name__ == "__main__":
         default="cuda:0" if torch.cuda.is_available() else "cpu",
         help="训练设备",
     )
-    parser.add_argument("--dtype", type=str, default="bfloat16", help="混合精度类型")
-    parser.add_argument("--num_workers", type=int, default=1, help="数据加载线程数")
+    parser.add_argument(
+        "--dtype", 
+        type=str, 
+        default="bfloat16", 
+        help="混合精度类型"
+    )
+    parser.add_argument(
+        "--num_workers", 
+        type=int, 
+        default=1, 
+        help="数据加载线程数"
+    )
 
     # ========== 训练策略 ==========
     parser.add_argument(
-        "--accumulation_steps", type=int, default=1, help="梯度累积步数"
+        "--accumulation_steps", 
+        type=int, 
+        default=1, 
+        help="梯度累积步数"
     )
-    parser.add_argument("--grad_clip", type=float, default=1.0, help="梯度裁剪阈值")
-    parser.add_argument("--log_interval", type=int, default=1, help="日志打印间隔")
-    parser.add_argument("--save_interval", type=int, default=10, help="模型保存间隔")
+    parser.add_argument(
+        "--grad_clip", 
+        type=float, 
+        default=1.0, 
+        help="梯度裁剪阈值"
+    )
+    parser.add_argument(
+        "--log_interval", 
+        type=int, 
+        default=1, 
+        help="日志打印间隔"
+    )
+    parser.add_argument(
+        "--save_interval", 
+        type=int, 
+        default=10, 
+        help="模型保存间隔"
+    )
 
     # ========== 模型架构参数 ==========
-    parser.add_argument("--hidden_size", default=512, type=int, help="隐藏层维度")
-    parser.add_argument("--num_hidden_layers", default=8, type=int, help="隐藏层数量")
+    parser.add_argument(
+        "--hidden_size", 
+        default=512, 
+        type=int, 
+        help="隐藏层维度"
+    )
+    parser.add_argument(
+        "--num_hidden_layers", 
+        default=8, 
+        type=int, 
+        help="隐藏层数量"
+    )
     parser.add_argument(
         "--use_moe",
         default=0,
@@ -427,8 +489,18 @@ if __name__ == "__main__":
     )
 
     # ========== PPO生成参数 ==========
-    parser.add_argument("--max_seq_len", default=66, type=int, help="Prompt最大长度")
-    parser.add_argument("--max_gen_len", type=int, default=1536, help="生成的最大长度")
+    parser.add_argument(
+        "--max_seq_len", 
+        default=66, 
+        type=int, 
+        help="Prompt 最大长度"
+    )
+    parser.add_argument(
+        "--max_gen_len", 
+        type=int, 
+        default=1536, 
+        help="生成的最大长度"
+    )
 
     # ========== 数据和模型参数 ==========
     parser.add_argument(
@@ -445,8 +517,18 @@ if __name__ == "__main__":
         default=0.1,
         help="PPO 裁剪参数(控制策略更新幅度)",
     )
-    parser.add_argument("--vf_coef", type=float, default=0.5, help="Value function 系数")
-    parser.add_argument("--kl_coef", type=float, default=0.02, help="KL 散度惩罚系数")
+    parser.add_argument(
+        "--vf_coef", 
+        type=float, 
+        default=0.5, 
+        help="Value function 系数"
+    )
+    parser.add_argument(
+        "--kl_coef", 
+        type=float, 
+        default=0.02, 
+        help="KL 散度惩罚系数"
+    )
 
     # 推理模型配置
     parser.add_argument(
@@ -457,14 +539,17 @@ if __name__ == "__main__":
         help="是否为推理模型",
     )
     parser.add_argument(
-        "--update_old_actor_freq", type=int, default=4, help="更新 old_actor_model 的频率"
+        "--update_old_actor_freq", 
+        type=int, 
+        default=4, 
+        help="更新 old_actor_model 的频率"
     )
 
     # Reward模型路径
     parser.add_argument(
         "--reward_model_path",
         type=str,
-        default="../../internlm2-1_8b-reward",
+        default="../../internlm2-1_8b-reward", # 需要修改
         help="Reward 模型路径",
     )
 
@@ -477,9 +562,16 @@ if __name__ == "__main__":
     )
 
     # ========== 实验跟踪 ==========
-    parser.add_argument("--use_wandb", action="store_true", help="是否使用 wandb")
     parser.add_argument(
-        "--wandb_project", type=str, default="ZzMind-PPO", help="wandb 项目名"
+        "--use_wandb", 
+        action="store_true", 
+        help="是否使用 wandb"
+    )
+    parser.add_argument(
+        "--wandb_project", 
+        type=str, 
+        default="ZzMind-PPO", 
+        help="wandb 项目名"
     )
 
     args = parser.parse_args()
@@ -519,7 +611,10 @@ if __name__ == "__main__":
         resume = "must" if wandb_id else None
         wandb_run_name = f"MokioMind-PPO-Epoch-{args.epochs}-BS-{args.batch_size}-LR-{args.learning_rate}"
         wandb.init(
-            project=args.wandb_project, name=wandb_run_name, id=wandb_id, resume=resume
+            project=args.wandb_project, 
+            name=wandb_run_name, 
+            id=wandb_id, 
+            resume=resume
         )
     # ========== 5. 初始化模型和数据 ==========
     # PPO 模型架构

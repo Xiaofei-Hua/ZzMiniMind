@@ -140,16 +140,35 @@ if __name__ == "__main__":
 
     # ========== 基础训练参数 ==========
     parser.add_argument(
-        "--save_dir", type=str, default=OUT_DIR, help="模型保存目录"
+        "--save_dir", 
+        type=str, 
+        default=OUT_DIR, 
+        help="模型保存目录"
     )
     parser.add_argument(
-        "--save_weight", default="pretrain", type=str, help="保存权重的前缀名"
+        "--save_weight", 
+        default="pretrain", 
+        type=str, 
+        help="保存权重的前缀名"
     )
     parser.add_argument(
-        "--epochs", type=int, default=1, help="训练轮数 (建议 1 轮 zero 或 2-6 轮充分训练)"
+        "--epochs", 
+        type=int, 
+        default=1, 
+        help="训练轮数 (建议 1 轮 zero 或 2-6 轮充分训练)"
     )
-    parser.add_argument("--batch_size", type=int, default=32, help="batch size")
-    parser.add_argument("--learning_rate", type=float, default=5e-4, help="初始学习率")
+    parser.add_argument(
+        "--batch_size", 
+        type=int, 
+        default=32, 
+        help="batch size"
+    )
+    parser.add_argument(
+        "--learning_rate", 
+        type=float, 
+        default=5E-4, 
+        help="初始学习率"
+    )
 
     # ========== 硬件和性能参数 ==========
     parser.add_argument(
@@ -158,22 +177,63 @@ if __name__ == "__main__":
         default="cuda:0" if torch.cuda.is_available() else "cpu",
         help="训练设备",
     )
-    parser.add_argument("--dtype", type=str, default="bfloat16", help="混合精度类型")
-    parser.add_argument("--num_workers", type=int, default=1, help="数据加载线程数")
+    parser.add_argument(
+        "--dtype", 
+            type=str, 
+            default="bfloat16", 
+            help="混合精度类型"
+    )
+    parser.add_argument(
+        "--num_workers", 
+        type=int, 
+        default=1, 
+        help="数据加载线程数"
+    )
 
     # ========== 训练策略参数 ==========
     parser.add_argument(
-        "--accumulation_steps", type=int, default=8, help="梯度累积步数"
+        "--accumulation_steps", 
+        type=int,
+        default=8, 
+        help="梯度累积步数"
     )
-    parser.add_argument("--grad_clip", type=float, default=1.0, help="梯度裁剪阈值")
-    parser.add_argument("--log_interval", type=int, default=100, help="日志打印间隔")
-    parser.add_argument("--save_interval", type=int, default=100, help="模型保存间隔")
+    parser.add_argument(
+        "--grad_clip", 
+        type=float, 
+        default=1.0, 
+        help="梯度裁剪阈值"
+    )
+    parser.add_argument(
+        "--log_interval", 
+        type=int, 
+        default=100, 
+        help="日志打印间隔"
+    )
+    parser.add_argument(
+        "--save_interval", 
+        type=int, 
+        default=100, 
+        help="模型保存间隔"
+    )
 
     # ========== 模型架构参数 ==========
-    parser.add_argument("--hidden_size", default=512, type=int, help="隐藏层维度")
-    parser.add_argument("--num_hidden_layers", default=8, type=int, help="隐藏层数量")
     parser.add_argument(
-        "--max_seq_len", default=512, type=int, help="训练的最大截断长度"
+        "--hidden_size", 
+        default=512, 
+        type=int, 
+        help="隐藏层维度"
+    )
+    parser.add_argument(
+        "--num_hidden_layers", 
+        default=8, 
+        type=int, 
+        help="隐藏层数量"
+    )
+    parser.add_argument(
+        "--max_seq_len", 
+        default=512, 
+        type=int, 
+        help="训练的最大截断长度"
     )
     parser.add_argument(
         "--use_moe",
@@ -205,9 +265,16 @@ if __name__ == "__main__":
     )
 
     # ========== 实验跟踪参数 ==========
-    parser.add_argument("--use_wandb", action="store_true", help="是否使用 wandb")
     parser.add_argument(
-        "--wandb_project", type=str, default="ZzMind-Pretrain", help="wandb 项目名"
+        "--use_wandb", 
+        action="store_true", 
+        help="是否使用 wandb"
+    )
+    parser.add_argument(
+        "--wandb_project", 
+        type=str, 
+        default="ZzMind-Pretrain", 
+        help="wandb 项目名"
     )
 
     # 解析命令行参数
@@ -300,9 +367,17 @@ if __name__ == "__main__":
     - 缩放器: 混合精度训练的梯度缩放
     """
     # 初始化模型和分词器
-    model, tokenizer = init_model(lm_config, args.from_weight, device=args.device)
+    model, tokenizer = init_model(
+        lm_config, 
+        args.from_weight, 
+        device=args.device
+    )
 
-    train_ds = PretrainDataset(args.data_path, tokenizer, max_length=args.max_seq_len)
+    train_ds = PretrainDataset(
+        args.data_path, 
+        tokenizer, 
+        max_length=args.max_seq_len
+    )
 
     train_sampler = DistributedSampler(train_ds) if dist.is_initialized() else None
 

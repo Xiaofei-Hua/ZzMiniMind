@@ -6,6 +6,7 @@ import torch
 import torch.distributed as dist
 from torch.utils.data import Sampler
 
+from constants import OUT_DIR, CHECKPOINT_DIR
 
 # 检查是否是主进程
 def is_main_process():
@@ -51,7 +52,7 @@ def lm_checkpoint(
     epoch=0,
     step=0,
     wandb=None,
-    save_dir="checkpoints",
+    save_dir=CHECKPOINT_DIR,
     **kwargs,
 ):
     os.makedirs(save_dir, exist_ok=True)
@@ -124,7 +125,7 @@ def init_model(
     lm_config,
     from_weight="pretrain",
     tokenizer_path=None,
-    save_dir="../out",
+    save_dir=OUT_DIR,
     device="cuda",
 ):
     from transformers import AutoTokenizer
@@ -153,7 +154,7 @@ def init_model(
         model.load_state_dict(weights, strict=False)
 
     total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    Logger(f"所加载 Model 可训练参数: {total_params / 1E6:.3f} 百万")
+    Logger(f"所加载 Model 可训练参数: {total_params / 1E6:.3E} M(illion)")
 
     return model.to(device), tokenizer
 
