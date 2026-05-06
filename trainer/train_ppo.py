@@ -512,7 +512,7 @@ if __name__ == "__main__":
         help="RLAIF 数据路径",
     )
 
-    # 📚 PPO超参数
+    # PPO 超参数
     parser.add_argument(
         "--clip_epsilon",
         type=float,
@@ -592,7 +592,7 @@ if __name__ == "__main__":
         use_moe=bool(args.use_moe),
     )
     ckp_data = (
-        lm_checkpoint(lm_config, weight=args.save_weight, save_dir="../checkpoints")
+        lm_checkpoint(lm_config, weight=args.save_weight, save_dir=CHECKPOINT_DIR)
         if args.from_resume == 1
         else None
     )
